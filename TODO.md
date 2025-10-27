@@ -1,0 +1,3 @@
+- [x] Add GetTotalUsersFromDB, GetTotalMoviesFromDB, GetTotalBookingsFromDB functions to admin.go
+- [x] Add AdminDashboard handler to admin.go
+- [x] Update routes.go to use AdminDashboard in admin group

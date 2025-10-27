@@ -78,7 +78,11 @@
       if(res.ok){
         alert('Login successful!');
         localStorage.setItem('token', data.token);
-        window.location.href = '/';
+        if(data.user && data.user.is_admin){
+          window.location.href = '/admin/dashboard?token=' + data.token;
+        } else {
+          window.location.href = '/';
+        }
       } else {
         alert(data.error || 'Login failed');
       }

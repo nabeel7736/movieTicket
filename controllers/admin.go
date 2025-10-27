@@ -11,6 +11,25 @@ import (
 	"gorm.io/gorm"
 )
 
+// Helper functions to get totals from DB
+func GetTotalUsersFromDB(db *gorm.DB) int64 {
+	var count int64
+	db.Model(&models.User{}).Count(&count)
+	return count
+}
+
+func GetTotalMoviesFromDB(db *gorm.DB) int64 {
+	var count int64
+	db.Model(&models.Movie{}).Count(&count)
+	return count
+}
+
+func GetTotalBookingsFromDB(db *gorm.DB) int64 {
+	var count int64
+	db.Model(&models.Booking{}).Count(&count)
+	return count
+}
+
 // Admin: Add Movie
 func AdminAddMovie(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -103,5 +122,20 @@ func AdminUpdateBookingStatus(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"booking": booking})
+	}
+}
+
+// Admin Dashboard
+func AdminDashboard(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		totalUsers := GetTotalUsersFromDB(db)
+		totalMovies := GetTotalMoviesFromDB(db)
+		totalBookings := GetTotalBookingsFromDB(db)
+
+		c.HTML(http.StatusOK, "admin_dashboard.html", gin.H{
+			"TotalUsers":    totalUsers,
+			"TotalMovies":   totalMovies,
+			"TotalBookings": totalBookings,
+		})
 	}
 }

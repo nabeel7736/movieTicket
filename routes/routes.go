@@ -40,13 +40,7 @@ func SetupRouter() *gin.Engine {
 		admin.POST("/shows", controllers.AdminAddShow(config.DB))
 		admin.GET("/bookings", controllers.AdminListBookings(config.DB))
 		admin.PATCH("/bookings/:id", controllers.AdminUpdateBookingStatus(config.DB))
-		// serve some admin templates (optional)
-		admin.GET("/dashboard", func(c *gin.Context) {
-			// minimal admin template rendering
-			var movies []interface{}
-			// optional: fetch movies etc.
-			c.HTML(200, "admin_dashboard.html", gin.H{"movies": movies})
-		})
+		admin.GET("/dashboard", controllers.AdminDashboard(config.DB))
 	}
 
 	// public HTML routes (for minimal template front-end)
