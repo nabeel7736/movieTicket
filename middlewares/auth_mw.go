@@ -39,15 +39,26 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// func AdminMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		v, exists := c.Get("is_admin")
+// 		if !exists {
+// 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "no admin info"})
+// 			return
+// 		}
+// 		isAdmin, ok := v.(bool)
+// 		if !ok || !isAdmin {
+// 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "admin only"})
+// 			return
+// 		}
+// 		c.Next()
+// 	}
+// }
+
 func AdminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		v, exists := c.Get("is_admin")
-		if !exists {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "no admin info"})
-			return
-		}
-		isAdmin, ok := v.(bool)
-		if !ok || !isAdmin {
+		isAdmin, _ := c.Get("is_admin")
+		if isAdmin != true {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "admin only"})
 			return
 		}

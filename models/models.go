@@ -7,9 +7,10 @@ import (
 )
 
 type User struct {
-	ID        uint   `gorm:"primaryKey"`
-	FullName  string `gorm:"not null"`
-	Email     string `gorm:"uniqueIndex;not null"`
+	ID       uint   `gorm:"primaryKey"`
+	FullName string `gorm:"not null" json:"full_name"`
+	Email    string `gorm:"uniqueIndex;not null" json:"email"`
+
 	Password  string `gorm:"not null"` // stored as bcrypt hash
 	IsAdmin   bool   `gorm:"default:false"`
 	CreatedAt time.Time

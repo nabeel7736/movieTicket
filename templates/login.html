@@ -77,15 +77,26 @@
       const data = await res.json();
       if(res.ok){
         alert('Login successful!');
-        localStorage.setItem('token', data.token);
-        if(data.user && data.user.is_admin){
-          window.location.href = '/admin/dashboard?token=' + data.token;
-        } else {
+        // localStorage.setItem('token', data.token);
+        // if(data.user && data.user.is_admin){
+        //   window.location.href = '/admin/dashboard?token=' + data.token;
+        // }
+        
+        if (data.user && data.user.is_admin) {
+  localStorage.setItem('token', data.token);
+  window.location.href = '/admin/dashboard';
+}
+        else {
           window.location.href = '/';
         }
       } else {
         alert(data.error || 'Login failed');
       }
+
+      const button = document.querySelector('button');
+button.disabled = true;
+button.innerText = 'Logging in...';
+
     });
   </script>
 </body>

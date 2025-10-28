@@ -82,10 +82,17 @@
       const data = await res.json();
       if(res.ok){
         alert('Registration successful!');
-        window.location.href = '/login';
+        // window.location.href = '/login';
+         setTimeout(() => window.location.href = '/login', 500);
       } else {
         alert(data.error || 'Registration failed');
       }
+
+      const password = document.getElementById('password').value;
+if (password.length < 6) {
+  return alert('Password must be at least 6 characters long');
+}
+
     });
   </script>
 </body>

@@ -39,6 +39,13 @@ func Register(db *gorm.DB) gin.HandlerFunc {
 			Password: hashed,
 			IsAdmin:  false,
 		}
+
+		var existing models.User
+		if err := db.Where("email = ?", req.Email).First(&existing).Error; err == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "email already exists"})
+			return
+		}
+
 		if err := db.Create(&user).Error; err != nil {
 			c.JSON(http.StatusConflict, gin.H{"error": "email already used or invalid data", "details": err.Error()})
 			return
@@ -57,11 +64,15 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 		}
 		var user models.User
 		if err := db.Where("email = ?", req.Email).First(&user).Error; err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "email not found"})
 			return
 		}
-		if !utils.CheckPasswordHash(user.Password, req.Password) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		if !utils.CheckPasswordHash(req.Password, user.Password) {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error":    "password mismatch",
+				"provided": req.Password,
+				"stored":   user.Password,
+			})
 			return
 		}
 		token, err := utils.CreateToken(user.ID, user.IsAdmin)

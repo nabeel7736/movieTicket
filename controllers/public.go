@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"cineverse/config"
 	"cineverse/models"
 
 	"github.com/gin-gonic/gin"
@@ -12,13 +13,22 @@ import (
 func GetMovies(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var movies []models.Movie
-		if err := db.Find(&movies).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err := config.DB.Find(&movies).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch movies"})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"movies": movies})
 	}
 }
+
+// func GetMovies(c *gin.Context) {
+// 	var movies []models.Movie
+// 	if err := config.DB.Find(&movies).Error; err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch movies"})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{"movies": movies})
+// }
 
 func GetMovieDetails(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -34,13 +44,28 @@ func GetMovieDetails(db *gorm.DB) gin.HandlerFunc {
 
 func GetShowsByMovie(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		movieID := c.Param("movie_id")
+		// movieID := c.Param("movie_id")
+		// var shows []models.Show
+		// if err := db.Where("movie_id = ?", movieID).Find(&shows).Error; err != nil {
+		// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// 	return
+		// }
+		// c.JSON(http.StatusOK, gin.H{"shows": shows})
+
+		id := c.Param("id")
+		var movie models.Movie
 		var shows []models.Show
-		if err := db.Where("movie_id = ?", movieID).Find(&shows).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		if err := config.DB.First(&movie, id).Error; err != nil {
+			c.String(404, "Movie not found")
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"shows": shows})
+		config.DB.Where("movie_id = ?", id).Find(&shows)
+
+		c.HTML(http.StatusOK, "public_movie_details.html", gin.H{
+			"Movie": movie,
+			"Shows": shows,
+		})
 	}
 }
 
